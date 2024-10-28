@@ -1,5 +1,5 @@
+import 'package:expense_tracker/models/expense.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 final formatter = DateFormat.yMd();
@@ -17,6 +17,8 @@ class _NewExpenseState extends State<NewExpense> {
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
   DateTime? _selectedDate;
+
+  Category _selectedCategory = Category.leisure;
 
   void _presentDatePicker() async {
     final now = DateTime.now();
@@ -57,7 +59,6 @@ class _NewExpenseState extends State<NewExpense> {
                 child: TextField(
                   keyboardType: TextInputType.number,
                   controller: _amountController,
-                  maxLength: 20,
                   decoration: const InputDecoration(
                     prefixText: '\$ ',
                     label: Text('Amount'),
@@ -86,8 +87,33 @@ class _NewExpenseState extends State<NewExpense> {
               ),
             ],
           ),
+          const SizedBox(
+            height: 16,
+          ),
           Row(
             children: [
+              DropdownButton(
+                  value: _selectedCategory,
+                  items: Category.values
+                      .map(
+                        (category) => DropdownMenuItem(
+                          value: category,
+                          child: Text(
+                            category.name.toUpperCase(),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      if (value == null) {
+                        return;
+                      }
+                      _selectedCategory = value;
+                    });
+                    ;
+                  }),
+              const Spacer(),
               ElevatedButton(
                 onPressed: () {
                   print(_titleController.text);
@@ -95,7 +121,9 @@ class _NewExpenseState extends State<NewExpense> {
                 },
                 child: const Text('Save Expense'),
               ),
-              const Spacer(),
+              const SizedBox(
+                width: 5,
+              ),
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
